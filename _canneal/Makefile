@@ -5,9 +5,9 @@ start:
 
 serial:
 	for entry in src/*.cpp ; do \
-		${RISCV}/bin/clang++ --target=riscv64-unknown-elf -march=rv64g -O2 -fno-vectorize -c -o $$entry.o  $$entry ; \
+		${RISCV}/bin/clang++ -march=rv64g -O2 -fno-vectorize -c -o $$entry.o  $$entry ; \
 	done
-	${RISCV}/bin/clang++ --target=riscv64-unknown-elf -march=rv64g -O2 -fno-vectorize -o bin/canneal_serial.exe src/*.cpp.o -lm ; \
+	${RISCV}/bin/clang++ -march=rv64g -O2 -fno-vectorize -o bin/canneal_serial.exe src/*.cpp.o -lm ; \
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/canneal_serial.exe > bin/canneal_serial.dump ; \
 	rm src/*.o ; \
 
