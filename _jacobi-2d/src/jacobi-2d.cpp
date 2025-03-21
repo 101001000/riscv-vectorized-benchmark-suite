@@ -24,7 +24,7 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
-
+#include "../../common/riscv_util.h"
 
 #ifdef USE_RISCV_VECTOR
 #include "../../common/vector_defines.h"
@@ -126,7 +126,7 @@ void kernel_jacobi_2d(int tsteps,int n, DATA_TYPE **A,DATA_TYPE **B)
 #endif
 }
 
-
+/*
 long long get_time() {
   struct timeval tv;
   gettimeofday(&tv, NULL);
@@ -136,7 +136,7 @@ long long get_time() {
 // Returns the number of seconds elapsed between the two specified times
 double elapsed_time(long long start_time, long long end_time) {
         return (double) (end_time - start_time) / (1000 * 1000);
-}
+}*/
 
 
 void output_printfile(int n,DATA_TYPE **A,  string& outfile ) {
