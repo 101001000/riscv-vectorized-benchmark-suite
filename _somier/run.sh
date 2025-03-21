@@ -9,7 +9,7 @@ echo " "
 app_name="somier"
 
 while true; do
-    echo -n "do you want to run on spike or qemu [spike qemu gem5]: "
+    echo -n "do you want to run on spike, qemu or nosim [spike qemu gem5 nosim]: "
     read sim
     if [ $sim == "spike" ]; then
 		simulator="$RISCV/bin/spike --isa=rv64gcv pk"
@@ -19,6 +19,9 @@ while true; do
 		break
 	elif [ $sim == "gem5" ]; then
 		simulator="$GEM5/build/RISCV/gem5.opt $GEM5/configs/deprecated/example/se.py"
+		break
+	elif [ $sim == "nosim" ]; then
+		simulator=""
 		break
     else
     	echo "Input not valid, try again."

@@ -9,17 +9,20 @@ echo " "
 app_name="pathfinder"
 
 while true; do
-    echo -n "do you want to run on spike or qemu [spike qemu gem5]: "
+    echo -n "do you want to run on spike, qemu or nosim [spike qemu gem5 nosim]: "
     read sim
     if [ $sim == "spike" ]; then
 		simulator="$RISCV/bin/spike --isa=rv64gcv pk"
 		break
 	elif [ $sim == "qemu" ]; then
-		//simulator="$RISCV/bin/qemu-riscv64 -L $RISCV/sysroot"
+		#simulator="$RISCV/bin/qemu-riscv64 -L $RISCV/sysroot"
 		echo "qemu is not working for pathfinder. Try with a diferent option: "
         continue
 	elif [ $sim == "gem5" ]; then
 		simulator="$GEM5/build/RISCV/gem5.opt $GEM5/configs/deprecated/example/se.py"
+		break
+    elif [ $sim == "nosim" ]; then
+		simulator=""
 		break
     else
     	echo "Input not valid, try again."
