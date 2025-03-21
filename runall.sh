@@ -28,13 +28,13 @@ for app in "${APPS[@]}"; do
     cd "_${app}" || { echo "No se encuentra _$app"; continue; }
 
     echo "   - Ejecutando en modo vector..."
-    # Emulamos las respuestas a los 'read' dentro de run.sh:
-    #  1) 'vector'  (para el modo)
-    #  2) 'large'   (para el tamaño de simulación)
     echo -e "nosim\nvector\nlarge" | ./run.sh
 
     echo "   - Ejecutando en modo serial..."
     echo -e "nosim\nserial\nlarge" | ./run.sh
+
+    echo "   - Ejecutando en modo auto..."
+    echo -e "nosim\nauto\nlarge" | ./run.sh
 
     cd "$CURRENT_DIR" || exit
     echo ""

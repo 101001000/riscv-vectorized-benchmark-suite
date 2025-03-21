@@ -32,13 +32,14 @@ done
 while true; do
     echo -n "do you want to run the serial or vectorized version [serial vector]: "
     read version
-    if [[ $version == "serial" ]]  || [[ $version == "vector" ]]; then
+    if [[ $version == "serial" ]]  || [[ $version == "vector" ]] || [[ $version == "auto" ]]; then
         break
     else
     	echo "Input not valid, try again."
         continue
     fi
 done
+
 
 while true; do
     echo -n "select the simulation size [tiny small medium large]: "
