@@ -36,6 +36,7 @@
 
 #include <time.h>
 #include <sys/time.h>
+#include "../../common/riscv_util.h"
 
 /*************************************************************************
 * RISC-V Vectorized Version
@@ -150,6 +151,8 @@ int main (int argc, char * const argv[]) {
 //#endif
 
 
+long long t1 = get_time();
+
 #ifdef ENABLE_THREADS
 	std::vector<pthread_t> threads(num_threads);
 	void* thread_in = static_cast<void*>(&a_thread);
@@ -163,10 +166,12 @@ int main (int argc, char * const argv[]) {
 	a_thread.Run();
 #endif
 
+long long t2 = get_time();
 
 //#ifdef USE_RISCV_VECTOR
     gettimeofday(&tv4, &tz);
-    elapsed2 = (double) (tv4.tv_sec-tv3.tv_sec) + (double) (tv4.tv_usec-tv3.tv_usec) * 1.e-6; 
+    elapsed2 = elapsed_time(t1, t2);
+    //elapsed2 = (double) (tv4.tv_sec-tv3.tv_sec) + (double) (tv4.tv_usec-tv3.tv_usec) * 1.e-6; 
     printf("\n\nthread.Run() %8.8lf secs   \n", elapsed2 );
 //#endif
 
