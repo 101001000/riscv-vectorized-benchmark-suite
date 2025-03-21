@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
 
 static long long get_time() {
     struct timeval tv;
@@ -15,7 +16,12 @@ static long long get_time() {
     return (tv.tv_sec * 1000000) + tv.tv_usec;
 }
 
-static float elapsed_time(long long start_time, long long end_time, bool print=false) {
+static float elapsed_time(long long start_time, long long end_time) {
+    float elapsed_ms = (float)(end_time - start_time) / (1000.0f * 1000.0f);
+    return elapsed_ms;
+}
+
+static float elapsed_time(long long start_time, long long end_time, bool print) {
     float elapsed_ms = (float)(end_time - start_time) / (1000.0f * 1000.0f);
     if(print){
         char path[2048];
