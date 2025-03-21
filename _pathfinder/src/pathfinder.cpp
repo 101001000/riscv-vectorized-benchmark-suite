@@ -112,7 +112,7 @@ int main(int argc, char** argv)
 long long start_0 = get_time();
 init(argc,argv);
 long long end_0 = get_time();
-printf("TIME TO INIT DATA: %f\n", elapsed_time(start_0, end_0));
+printf("TIME TO INIT DATA: %f\n", elapsed_time(start_0, end_0, false));
 
 #ifndef USE_RISCV_VECTOR
     run();
@@ -218,7 +218,7 @@ void run_vector()
         }
     }
     long long end = get_time();
-    printf("TIME TO FIND THE SMALLEST PATH: %f\n", elapsed_time(start, end));
+    printf("TIME TO FIND THE SMALLEST PATH: %f\n", elapsed_time(start, end, false));
 
 
     if(compare(cols, dst, reference)){

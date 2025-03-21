@@ -621,7 +621,7 @@ int main (int argc, char **argv)
     printf("Size of data: %lu\n", numOptions * (sizeof(OptionData) + sizeof(int)));
 
     end = get_time();
-    printf("\n\nBlackScholes Initialization took %8.8lf secs   \n", elapsed_time(start, end));
+    printf("\n\nBlackScholes Initialization took %8.8lf secs   \n", elapsed_time(start, end, false));
 
     // ROI
     start = get_time();

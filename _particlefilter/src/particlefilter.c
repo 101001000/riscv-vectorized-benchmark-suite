@@ -423,7 +423,7 @@ void particleFilter(int * I, int IszX, int IszY, int Nfr, int * seed, int Nparti
     getneighbors(disk, countOnes, objxy, radius);
     
     long long get_neighbors = get_time();
-    printf("TIME TO GET NEIGHBORS TOOK: %f\n", elapsed_time(start, get_neighbors));
+    printf("TIME TO GET NEIGHBORS TOOK: %f\n", elapsed_time(start, get_neighbors, false));
     //initial weights are all equal (1/Nparticles)
     double * weights = (double *)malloc(sizeof(double)*Nparticles);
     //#pragma omp parallel for shared(weights, Nparticles) private(x)
@@ -431,7 +431,7 @@ void particleFilter(int * I, int IszX, int IszY, int Nfr, int * seed, int Nparti
         weights[x] = 1/((double)(Nparticles));
     }
     long long get_weights = get_time();
-    printf("TIME TO GET WEIGHTSTOOK: %f\n", elapsed_time(get_neighbors, get_weights));
+    printf("TIME TO GET WEIGHTSTOOK: %f\n", elapsed_time(get_neighbors, get_weights, false));
     //initial likelihood to 0.0
     double * likelihood = (double *)malloc(sizeof(double)*Nparticles);
     double * arrayX = (double *)malloc(sizeof(double)*Nparticles);
@@ -448,7 +448,7 @@ void particleFilter(int * I, int IszX, int IszY, int Nfr, int * seed, int Nparti
     }
     int k;
     
-    printf("TIME TO SET ARRAYS TOOK: %f\n", elapsed_time(get_weights, get_time()));
+    printf("TIME TO SET ARRAYS TOOK: %f\n", elapsed_time(get_weights, get_time(), false));
     int indX, indY;
     for(k = 1; k < Nfr; k++){
         long long set_arrays = get_time();
@@ -461,7 +461,7 @@ void particleFilter(int * I, int IszX, int IszY, int Nfr, int * seed, int Nparti
             arrayY[x] += -2 + 2*randn(seed, x);
         }
         long long error = get_time();
-        printf("TIME TO SET ERROR TOOK: %f\n", elapsed_time(set_arrays, error));
+        printf("TIME TO SET ERROR TOOK: %f\n", elapsed_time(set_arrays, error, false));
         //particle filter likelihood
         //#pragma omp parallel for shared(likelihood, I, arrayX, arrayY, objxy, ind) private(x, y, indX, indY)
         for(x = 0; x < Nparticles; x++){
@@ -483,7 +483,7 @@ void particleFilter(int * I, int IszX, int IszY, int Nfr, int * seed, int Nparti
             likelihood[x] = likelihood[x]/((double) countOnes);
         }
         long long likelihood_time = get_time();
-        printf("TIME TO GET LIKELIHOODS TOOK: %f\n", elapsed_time(error, likelihood_time));
+        printf("TIME TO GET LIKELIHOODS TOOK: %f\n", elapsed_time(error, likelihood_time, false));
         // update & normalize weights
         // using equation (63) of Arulampalam Tutorial
         //#pragma omp parallel for shared(Nparticles, weights, likelihood) private(x)
@@ -491,20 +491,20 @@ void particleFilter(int * I, int IszX, int IszY, int Nfr, int * seed, int Nparti
             weights[x] = weights[x] * exp(likelihood[x]);
         }
         long long exponential = get_time();
-        printf("TIME TO GET EXP TOOK: %f\n", elapsed_time(likelihood_time, exponential));
+        printf("TIME TO GET EXP TOOK: %f\n", elapsed_time(likelihood_time, exponential, false));
         double sumWeights = 0;
         //#pragma omp parallel for private(x) reduction(+:sumWeights)
         for(x = 0; x < Nparticles; x++){
             sumWeights += weights[x];
         }
         long long sum_time = get_time();
-        printf("TIME TO SUM WEIGHTS TOOK: %f\n", elapsed_time(exponential, sum_time));
+        printf("TIME TO SUM WEIGHTS TOOK: %f\n", elapsed_time(exponential, sum_time, false));
         //#pragma omp parallel for shared(sumWeights, weights) private(x)
         for(x = 0; x < Nparticles; x++){
             weights[x] = weights[x]/sumWeights;
         }
         long long normalize = get_time();
-        printf("TIME TO NORMALIZE WEIGHTS TOOK: %f\n", elapsed_time(sum_time, normalize));
+        printf("TIME TO NORMALIZE WEIGHTS TOOK: %f\n", elapsed_time(sum_time, normalize, false));
         xe = 0;
         ye = 0;
         // estimate the object location by expected values
@@ -514,7 +514,7 @@ void particleFilter(int * I, int IszX, int IszY, int Nfr, int * seed, int Nparti
             ye += arrayY[x] * weights[x];
         }
         long long move_time = get_time();
-        printf("TIME TO MOVE OBJECT TOOK: %f\n", elapsed_time(normalize, move_time));
+        printf("TIME TO MOVE OBJECT TOOK: %f\n", elapsed_time(normalize, move_time, false));
         printf("XE: %lf\n", xe);
         printf("YE: %lf\n", ye);
         double distance = sqrt( pow((double)(xe-(int)roundDouble(IszY/2.0)),2) + pow((double)(ye-(int)roundDouble(IszX/2.0)),2) );
@@ -531,14 +531,14 @@ void particleFilter(int * I, int IszX, int IszY, int Nfr, int * seed, int Nparti
             CDF[x] = weights[x] + CDF[x-1];
         }
         long long cum_sum = get_time();
-        printf("TIME TO CALC CUM SUM TOOK: %f\n", elapsed_time(move_time, cum_sum));
+        printf("TIME TO CALC CUM SUM TOOK: %f\n", elapsed_time(move_time, cum_sum, false));
         double u1 = (1/((double)(Nparticles)))*randu(seed, 0);
         //#pragma omp parallel for shared(u, u1, Nparticles) private(x)
         for(x = 0; x < Nparticles; x++){
             u[x] = u1 + x/((double)(Nparticles));
         }
         long long u_time = get_time();
-        printf("TIME TO CALC U TOOK: %f\n", elapsed_time(cum_sum, u_time));
+        printf("TIME TO CALC U TOOK: %f\n", elapsed_time(cum_sum, u_time, false));
         int j, i;
         
         //#pragma omp parallel for shared(CDF, Nparticles, xj, yj, u, arrayX, arrayY) private(i, j)
@@ -554,7 +554,7 @@ void particleFilter(int * I, int IszX, int IszY, int Nfr, int * seed, int Nparti
         //printf("\n"); 
 
         long long xyj_time = get_time();
-        printf("TIME TO CALC NEW ARRAY X AND Y TOOK: %f\n", elapsed_time(u_time, xyj_time));
+        printf("TIME TO CALC NEW ARRAY X AND Y TOOK: %f\n", elapsed_time(u_time, xyj_time, false));
         
         //#pragma omp parallel for shared(weights, Nparticles) private(x)
         for(x = 0; x < Nparticles; x++){
@@ -564,7 +564,7 @@ void particleFilter(int * I, int IszX, int IszY, int Nfr, int * seed, int Nparti
             weights[x] = 1/((double)(Nparticles));
         }
         long long reset = get_time();
-        printf("TIME TO RESET WEIGHTS TOOK: %f\n", elapsed_time(xyj_time, reset));
+        printf("TIME TO RESET WEIGHTS TOOK: %f\n", elapsed_time(xyj_time, reset, false));
     }
     free(disk);
     free(objxy);
@@ -609,7 +609,7 @@ void particleFilter_vector(int * I, int IszX, int IszY, int Nfr, int * seed, int
     getneighbors(disk, countOnes, objxy, radius);
     
     long long get_neighbors = get_time();
-    printf("TIME TO GET NEIGHBORS TOOK: %f\n", elapsed_time(start, get_neighbors));
+    printf("TIME TO GET NEIGHBORS TOOK: %f\n", elapsed_time(start, get_neighbors , false));
     //initial weights are all equal (1/Nparticles)
     double * weights = (double *)malloc(sizeof(double)*Nparticles);
     //#pragma omp parallel for shared(weights, Nparticles) private(x)
@@ -626,7 +626,7 @@ void particleFilter_vector(int * I, int IszX, int IszY, int Nfr, int * seed, int
     }
 
     long long get_weights = get_time();
-    printf("TIME TO GET WEIGHTSTOOK: %f\n", elapsed_time(get_neighbors, get_weights));
+    printf("TIME TO GET WEIGHTSTOOK: %f\n", elapsed_time(get_neighbors, get_weights , false));
     //initial likelihood to 0.0
     double * likelihood = (double *)malloc(sizeof(double)*Nparticles);
     double * arrayX = (double *)malloc(sizeof(double)*Nparticles);
@@ -659,7 +659,7 @@ void particleFilter_vector(int * I, int IszX, int IszY, int Nfr, int * seed, int
     _MMR_f64    xAux;
 
     int k;
-    printf("TIME TO SET ARRAYS TOOK: %f\n", elapsed_time(get_weights, get_time()));
+    printf("TIME TO SET ARRAYS TOOK: %f\n", elapsed_time(get_weights, get_time() , false));
     int indX, indY;
 
 
@@ -694,7 +694,7 @@ void particleFilter_vector(int * I, int IszX, int IszY, int Nfr, int * seed, int
         }
         */
         long long error = get_time();
-        printf("TIME TO SET ERROR TOOK: %f\n", elapsed_time(set_arrays, error));
+        printf("TIME TO SET ERROR TOOK: %f\n", elapsed_time(set_arrays, error , false));
         //particle filter likelihood
         //#pragma omp parallel for shared(likelihood, I, arrayX, arrayY, objxy, ind) private(x, y, indX, indY)
         for(x = 0; x < Nparticles; x++){
@@ -716,7 +716,7 @@ void particleFilter_vector(int * I, int IszX, int IszY, int Nfr, int * seed, int
             likelihood[x] = likelihood[x]/((double) countOnes);
         }
         long long likelihood_time = get_time();
-        printf("TIME TO GET LIKELIHOODS TOOK: %f\n", elapsed_time(error, likelihood_time));
+        printf("TIME TO GET LIKELIHOODS TOOK: %f\n", elapsed_time(error, likelihood_time , false));
         // update & normalize weights
         // using equation (63) of Arulampalam Tutorial
         //#pragma omp parallel for shared(Nparticles, weights, likelihood) private(x)
@@ -724,20 +724,20 @@ void particleFilter_vector(int * I, int IszX, int IszY, int Nfr, int * seed, int
             weights[x] = weights[x] * exp(likelihood[x]);
         }
         long long exponential = get_time();
-        printf("TIME TO GET EXP TOOK: %f\n", elapsed_time(likelihood_time, exponential));
+        printf("TIME TO GET EXP TOOK: %f\n", elapsed_time(likelihood_time, exponential , false));
         double sumWeights = 0;
         //#pragma omp parallel for private(x) reduction(+:sumWeights)
         for(x = 0; x < Nparticles; x++){
             sumWeights += weights[x];
         }
         long long sum_time = get_time();
-        printf("TIME TO SUM WEIGHTS TOOK: %f\n", elapsed_time(exponential, sum_time));
+        printf("TIME TO SUM WEIGHTS TOOK: %f\n", elapsed_time(exponential, sum_time, false));
         //#pragma omp parallel for shared(sumWeights, weights) private(x)
         for(x = 0; x < Nparticles; x++){
             weights[x] = weights[x]/sumWeights;
         }
         long long normalize = get_time();
-        printf("TIME TO NORMALIZE WEIGHTS TOOK: %f\n", elapsed_time(sum_time, normalize));
+        printf("TIME TO NORMALIZE WEIGHTS TOOK: %f\n", elapsed_time(sum_time, normalize, false));
         xe = 0;
         ye = 0;
         // estimate the object location by expected values
@@ -747,7 +747,7 @@ void particleFilter_vector(int * I, int IszX, int IszY, int Nfr, int * seed, int
             ye += arrayY[x] * weights[x];
         }
         long long move_time = get_time();
-        printf("TIME TO MOVE OBJECT TOOK: %f\n", elapsed_time(normalize, move_time));
+        printf("TIME TO MOVE OBJECT TOOK: %f\n", elapsed_time(normalize, move_time, false));
         printf("XE: %lf\n", xe);
         printf("YE: %lf\n", ye);
         double distance = sqrt( pow((double)(xe-(int)roundDouble(IszY/2.0)),2) + pow((double)(ye-(int)roundDouble(IszX/2.0)),2) );
@@ -763,14 +763,14 @@ void particleFilter_vector(int * I, int IszX, int IszY, int Nfr, int * seed, int
             CDF[x] = weights[x] + CDF[x-1];
         }
         long long cum_sum = get_time();
-        printf("TIME TO CALC CUM SUM TOOK: %f\n", elapsed_time(move_time, cum_sum));
+        printf("TIME TO CALC CUM SUM TOOK: %f\n", elapsed_time(move_time, cum_sum, false));
         double u1 = (1/((double)(Nparticles)))*randu(seed, 0);
         //#pragma omp parallel for shared(u, u1, Nparticles) private(x)
         for(x = 0; x < Nparticles; x++){
             u[x] = u1 + x/((double)(Nparticles));
         }
         long long u_time = get_time();
-        printf("TIME TO CALC U TOOK: %f\n", elapsed_time(cum_sum, u_time));
+        printf("TIME TO CALC U TOOK: %f\n", elapsed_time(cum_sum, u_time, false));
         
         int j, i;
 
@@ -833,7 +833,7 @@ void particleFilter_vector(int * I, int IszX, int IszY, int Nfr, int * seed, int
         // for(j = 0; j < Nparticles; j++){ printf("%lf ", yj[i]); } printf("\n");
 
         long long xyj_time = get_time();
-        printf("TIME TO CALC NEW ARRAY X AND Y TOOK: %f\n", elapsed_time(u_time, xyj_time));
+        printf("TIME TO CALC NEW ARRAY X AND Y TOOK: %f\n", elapsed_time(u_time, xyj_time, false));
         
         //#pragma omp parallel for shared(weights, Nparticles) private(x)
         for(x = 0; x < Nparticles; x++){
@@ -843,7 +843,7 @@ void particleFilter_vector(int * I, int IszX, int IszY, int Nfr, int * seed, int
             weights[x] = 1/((double)(Nparticles));
         }
         long long reset = get_time();
-        printf("TIME TO RESET WEIGHTS TOOK: %f\n", elapsed_time(xyj_time, reset));
+        printf("TIME TO RESET WEIGHTS TOOK: %f\n", elapsed_time(xyj_time, reset, false));
     }
     free(locations);
     free(disk);
@@ -933,7 +933,7 @@ int main(int argc, char * argv[]){
     //call video sequence
     videoSequence(I, IszX, IszY, Nfr, seed);
     long long endVideoSequence = get_time();
-    printf("VIDEO SEQUENCE TOOK %f\n", elapsed_time(start, endVideoSequence));
+    printf("VIDEO SEQUENCE TOOK %f\n", elapsed_time(start, endVideoSequence, false));
 
     // Start instruction and cycles count of the region of interest
     //unsigned long cycles1, cycles2, instr2, instr1;
@@ -953,8 +953,8 @@ int main(int argc, char * argv[]){
     //cycles2 = get_cycles_count();
 
     long long endParticleFilter = get_time();
-    printf("PARTICLE FILTER TOOK %f\n", elapsed_time(endVideoSequence, endParticleFilter, true));
-    printf("ENTIRE PROGRAM TOOK %f\n", elapsed_time(start, endParticleFilter));
+    printf("PARTICLE FILTER TOOK %f\n", elapsed_time(endVideoSequence, endParticleFilter, false));
+    printf("ENTIRE PROGRAM TOOK %f\n", elapsed_time(start, endParticleFilter, false));
 
     // Instruction and cycles count of the region of interest
     //printf("-CSR   NUMBER OF EXEC CYCLES :%lu\n", cycles2 - cycles1);

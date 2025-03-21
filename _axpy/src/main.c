@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     double reference = capture_ref_result(a, dx, dy, n);
 
     end = get_time();
-    printf("init_vector time: %f\n", elapsed_time(start, end));
+    printf("init_vector time: %f\n", elapsed_time(start, end, false));
 
     start = get_time();
 #ifndef USE_RISCV_VECTOR
