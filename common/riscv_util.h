@@ -5,6 +5,9 @@
 
 #include <time.h>
 #include <sys/time.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 
 static long long get_time() {
     struct timeval tv;
@@ -12,9 +15,32 @@ static long long get_time() {
     return (tv.tv_sec * 1000000) + tv.tv_usec;
 }
 
-// Returns the number of seconds elapsed between the two specified times
 static float elapsed_time(long long start_time, long long end_time) {
-        return (float) (end_time - start_time) / (1000 * 1000);
+    char path[2048];
+    ssize_t count = readlink("/proc/self/exe", path, sizeof(path) - 1);
+
+    if (count != -1) {
+        path[count] = '\0';
+    } else {
+        strcpy(path, "unknown_exe");
+    }
+
+    char *exe_name = strrchr(path, '/');
+    if (!exe_name) {
+        exe_name = path; 
+    } else {
+        exe_name++; 
+    }
+
+    float elapsed_ms = (float)(end_time - start_time) / (1000.0f * 1000.0f);
+
+    FILE *file = fopen("../results.csv", "a");
+    if (file) {
+        fprintf(file, "%s,%.6f\n", exe_name, elapsed_ms);
+        fclose(file);
+    }
+
+    return elapsed_ms;
 }
 
 /*************************************************************************
