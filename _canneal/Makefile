@@ -11,6 +11,14 @@ serial:
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/canneal_serial.exe > bin/canneal_serial.dump ; \
 	rm src/*.o ; \
 
+auto:
+	for entry in src/*.cpp ; do \
+		${RISCV}/bin/clang++ -march=rv64gcv -O3 -c -o $$entry.o  $$entry ; \
+	done
+	${RISCV}/bin/clang++ -march=rv64g -O3 -o bin/canneal_auto.exe src/*.cpp.o -lm ; \
+	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/canneal_auto.exe > bin/canneal_auto.dump ; \
+	rm src/*.o ; \
+	
 vector:
 	${RISCV}/bin/clang++ -march=rv64gcv -DUSE_RISCV_VECTOR -O3 -fno-vectorize -c -o src/annealer_thread.o src/annealer_thread.cpp; \
 	${RISCV}/bin/clang++ -march=rv64gcv -DUSE_RISCV_VECTOR -O3 -fno-vectorize -c -o src/main.o src/main.cpp; \

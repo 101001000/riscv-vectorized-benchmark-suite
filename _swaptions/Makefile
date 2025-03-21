@@ -12,6 +12,14 @@ serial:
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/swaptions_serial.exe > bin/swaptions_serial.dump;	\
 	rm src/*.o; \
 
+auto:
+	for entry in src/*.cpp ; do \
+		${RISCV}/bin/clang++ -march=rv64gcv -O3 -c -o  $$entry.o  $$entry ; \
+	done
+	${RISCV}/bin/clang++ -march=rv64gcv -O3 -o bin/swaptions_auto.exe src/*.cpp.o -lm;	\
+	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/swaptions_auto.exe > bin/swaptions_auto.dump;	\
+	rm src/*.o; \
+
 vector:
 	${RISCV}/bin/clang++ -march=rv64gcv -DUSE_RISCV_VECTOR -O3 -fno-vectorize -c -o src/CumNormalInv.o src/CumNormalInv.cpp;	\
 	${RISCV}/bin/clang++ -march=rv64gcv -DUSE_RISCV_VECTOR -O3 -fno-vectorize -c -o src/MaxFunction.o src/MaxFunction.cpp;	\

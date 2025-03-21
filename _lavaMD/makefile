@@ -11,6 +11,14 @@ serial:
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/lavaMD_serial.exe > bin/lavaMD_serial.dump ; \
 	rm *.o ; \
 
+auto:
+	${RISCV}/bin/clang -march=rv64gcv -O3 -c -o num.o  util/num/num.c ; \
+	${RISCV}/bin/clang -march=rv64gcv -O3 -c -o kernel_cpu.o  kernel/kernel_cpu.c ; \
+	${RISCV}/bin/clang -march=rv64gcv -O3 -c -o main.o  main.c ; \
+	${RISCV}/bin/clang -march=rv64gcv -O3 -o bin/lavaMD_auto.exe *.o -lm ; \
+	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/lavaMD_auto.exe > bin/lavaMD_auto.dump ; \
+	rm *.o ; \
+
 vector:
 	${RISCV}/bin/clang -march=rv64gcv -DUSE_RISCV_VECTOR -O3 -fno-vectorize -c -o num.o  util/num/num.c ; \
 	${RISCV}/bin/clang -march=rv64gcv -DUSE_RISCV_VECTOR -O3 -fno-vectorize -c -o kernel_vector.o  kernel/kernel_vector.c ; \
