@@ -12,7 +12,7 @@ serial:
 	rm src/*.o
 	${RISCV}/bin/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds  bin/axpy_serial.exe > bin/axpy_serial.dump
 
-serial:
+auto:
 	echo "auto"
 	${RISCV}/bin/clang -march=rv64gcv -O3 -c -o src/utils.o src/utils.c
 	${RISCV}/bin/clang -march=rv64gcv -O3 -c -o src/axpy.o src/axpy.c
