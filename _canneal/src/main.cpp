@@ -170,7 +170,7 @@ long long t2 = get_time();
 
 //#ifdef USE_RISCV_VECTOR
     gettimeofday(&tv4, &tz);
-    elapsed2 = elapsed_time(t1, t2m, true);
+    elapsed2 = elapsed_time(t1, t2, true);
     //elapsed2 = (double) (tv4.tv_sec-tv3.tv_sec) + (double) (tv4.tv_usec-tv3.tv_usec) * 1.e-6; 
     printf("\n\nthread.Run() %8.8lf secs   \n", elapsed2 );
 //#endif
