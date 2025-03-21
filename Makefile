@@ -86,8 +86,7 @@ somier:
 	cd _somier; 		\
 	make start;			\
 	make vector; 		\
-	make serial;		\
-	make auto;
+	make serial;		
 
 
 streamcluster:
