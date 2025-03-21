@@ -121,12 +121,12 @@ int main(int argc, char *argv[]){
     start = get_time();
     spmv_intrinsics(M, a, ia, ja, x, y);
     end = get_time();
-    printf("spmv_intrinsics time: %f\n", elapsed_time(start, end));
+    printf("spmv_intrinsics time: %f\n", elapsed_time(start, end, true));
 #else // !USE_RISCV_VECTOR
     start = get_time();
     spmv_serial(M, a, ia, ja, x, y); 
     end = get_time();
-    printf("spmv_serial time: %f\n", elapsed_time(start, end));
+    printf("spmv_serial time: %f\n", elapsed_time(start, end, true));
 #endif
 
     if(verification == true){

@@ -155,7 +155,7 @@ void run()
     }
 
     long long end = get_time();
-    printf("TIME TO FIND THE SMALLEST PATH: %f\n", elapsed_time(start, end));
+    printf("TIME TO FIND THE SMALLEST PATH: %f\n", elapsed_time(start, end, true));
 
     if(compare(cols, dst, reference)){
         printf("Verification failed!\n");

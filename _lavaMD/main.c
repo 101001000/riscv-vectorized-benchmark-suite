@@ -380,7 +380,7 @@ main(	int argc,
 	// printf("%15.12f s, %15.12f % : SYS MEM: ALO\n",						(float) (time5-time4) / 1000000, (float) (time5-time4) / (float) (time7-time0) * 100);
 
 	//printf("%15.12f s, %15.12f % : KERNEL: COMPUTE\n",					(float) (time6-time5) / 1000000, (float) (time6-time5) / (float) (time7-time0) * 100);
-	printf("Kernel time %f\n", elapsed_time(time5, time6));
+	printf("Kernel time %f\n", elapsed_time(time5, time6, true));
 	// printf("%15.12f s, %15.12f % : SYS MEM: FRE\n", 					(float) (time7-time6) / 1000000, (float) (time7-time6) / (float) (time7-time0) * 100);
 
 	// printf("Total time:\n");

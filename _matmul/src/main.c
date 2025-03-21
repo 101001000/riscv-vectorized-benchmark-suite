@@ -77,7 +77,7 @@ int main (int argc, char **argv)
     printf("matrixmul_intrinsics done\n");
     
     end = get_time();
-    printf("matrixmul_intrinsics time: %f\n", elapsed_time(start, end));
+    printf("matrixmul_intrinsics time: %f\n", elapsed_time(start, end, true));
 
 #else // !USE_RISCV_VECTOR
 
@@ -85,7 +85,7 @@ int main (int argc, char **argv)
     printf("matmul_serial done\n");
     
     end = get_time();
-    printf("matmul_serial time: %f\n", elapsed_time(start, end));
+    printf("matmul_serial time: %f\n", elapsed_time(start, end, true));
 #endif
 
     

@@ -188,7 +188,7 @@ int main(int argc, char** argv)
 
   // stopping time
   long long end = get_time();
-  printf("time: %lf\n", elapsed_time(start, end));
+  printf("time: %lf\n", elapsed_time(start, end, true));
 #ifdef RESULT_PRINT
   output_printfile(n,A, outfilename );
 #endif  // RESULT_PRINT

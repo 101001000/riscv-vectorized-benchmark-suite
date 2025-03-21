@@ -695,7 +695,7 @@ int main (int argc, char **argv)
     // printf("-CSR   NUMBER OF INSTRUCTIONS EXECUTED :%lu\n", instr2 - instr1);
 //#endif
     end = get_time();
-    printf("\n\nBlackScholes Kernel took %8.8lf secs   \n", elapsed_time(start, end));
+    printf("\n\nBlackScholes Kernel took %8.8lf secs   \n", elapsed_time(start, end, true));
 
     
     //Write prices to output file

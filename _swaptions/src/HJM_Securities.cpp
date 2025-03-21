@@ -352,7 +352,7 @@ int main(int argc, char *argv[])
     //printf("-CSR   NUMBER OF INSTRUCTIONS EXECUTED :%lu\n", instr2 - instr1);
 
     end = get_time();
-    printf("\n\nSwaption Pricing Routine took %8.8lf secs   \n", elapsed_time(start, end));   
+    printf("\n\nSwaption Pricing Routine took %8.8lf secs   \n", elapsed_time(start, end, true));   
 //#endif
 
 #ifdef ENABLE_PARSEC_HOOKS

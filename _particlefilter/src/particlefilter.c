@@ -953,7 +953,7 @@ int main(int argc, char * argv[]){
     //cycles2 = get_cycles_count();
 
     long long endParticleFilter = get_time();
-    printf("PARTICLE FILTER TOOK %f\n", elapsed_time(endVideoSequence, endParticleFilter));
+    printf("PARTICLE FILTER TOOK %f\n", elapsed_time(endVideoSequence, endParticleFilter, true));
     printf("ENTIRE PROGRAM TOOK %f\n", elapsed_time(start, endParticleFilter));
 
     // Instruction and cycles count of the region of interest

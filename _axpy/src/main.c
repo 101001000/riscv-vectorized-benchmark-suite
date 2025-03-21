@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 #endif
 
     end = get_time();
-    printf("axpy time: %f\n", elapsed_time(start, end));
+    printf("axpy time: %f\n", elapsed_time(start, end, true));
 
     printf ("done\n");
     test_result(dy, reference, n);
