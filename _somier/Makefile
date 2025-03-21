@@ -2,8 +2,8 @@
 CC=${RISCV}/bin/clang
 OBJDUMP=${RISCV}/bin/llvm-objdump
 
-CFLAGS += -march=rv64g -O2 -fno-vectorize
-CFLAGS_VECTOR += -march=rv64gcv -O2 -fno-vectorize
+CFLAGS += -march=rv64g -O3 -fno-vectorize
+CFLAGS_VECTOR += -march=rv64gcv -O3 -fno-vectorize
 
 LDFLAGS = -lm -static
 IFLAGS = -I ./ -I ${VEHAVE_TOOLCHAIN}/include/vehave/ -I ${VEHAVE_TOOLCHAIN}/include/vehave-user/
