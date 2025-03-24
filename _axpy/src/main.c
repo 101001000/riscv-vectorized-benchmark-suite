@@ -12,6 +12,18 @@
 
 #include "../../common/riscv_util.h"
 
+#ifdef USE_SYCL
+#include <sycl.hpp>
+void axpy_serial_sycl(sycl::queue& q, double a, double *dx, double *dy, int n) {
+   int i;
+   q.submit([&](sycl::handler& cgh) {
+      cgh.parallel_for(sycl::range<1>(n), [=](sycl::id<1> i) {
+         dy[i] += a*dx[i];
+      });
+   }).wait();
+}
+#endif
+
 /*************************************************************************/
 
 #ifndef USE_RISCV_VECTOR
@@ -31,9 +43,17 @@ int main(int argc, char *argv[])
     else
         n = (30*1024);
 
-    /* Allocate the source and result vectors */
-    double *dx     = (double*)malloc(n*sizeof(double));
-    double *dy     = (double*)malloc(n*sizeof(double));
+
+    #ifdef USE_SYCL
+        sycl::queue q(sycl::cpu_selector_v);
+        double *dx = sycl::malloc_shared<double>(n, q);
+        double *dy = sycl::malloc_shared<double>(n, q);
+    #else
+        /* Allocate the source and result vectors */
+        double *dx     = (double*)malloc(n*sizeof(double));
+        double *dy     = (double*)malloc(n*sizeof(double));
+    #endif
+
 
     double a=1.53;
     init_vector(dx, n, 1.83);
@@ -46,7 +66,11 @@ int main(int argc, char *argv[])
 
     start = get_time();
 #ifndef USE_RISCV_VECTOR
-    axpy_serial(a, dx, dy, n); 
+    #ifdef USE_SYCL
+        axpy_serial_sycl(q, a, dx, dy, n);
+    #else
+        axpy_serial(a, dx, dy, n);
+    #endif
 #else
     axpy_vector(a, dx, dy, n);
 #endif
