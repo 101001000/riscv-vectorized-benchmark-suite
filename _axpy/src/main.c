@@ -1,3 +1,4 @@
+
 /*************************************************************************
 * Axpy Kernel
 * Author: Jesus Labarta
@@ -13,7 +14,7 @@
 #include "../../common/riscv_util.h"
 
 #ifdef USE_SYCL
-#include <sycl.hpp>
+#include <sycl/sycl.hpp>
 void axpy_serial_sycl(sycl::queue& q, double a, double *dx, double *dy, int n) {
    int i;
    q.submit([&](sycl::handler& cgh) {

@@ -13,12 +13,12 @@ serial:
 	${RISCV}/bin/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds  bin/axpy_serial.exe > bin/axpy_serial.dump
 sycl-serial:
 	echo "sycl-serial"
-	acpp -march=rv64g -O3 -c -o src/utils.o src/utils.c
-	acpp -march=rv64g -O3 -c -o src/axpy.o src/axpy.c
-	acpp -march=rv64g -O3 -c -o src/main.o src/main.c
-	acpp -march=rv64g -O3 -o bin/axpy_serial.exe src/*.o -lm
+	acpp -march=rv64g -O3 -c -DUSE_SYCL -o src/utils.o src/utils.c
+	acpp -march=rv64g -O3 -c -DUSE_SYCL -o src/axpy.o src/axpy.c
+	acpp -march=rv64g -O3 -c -DUSE_SYCL -o src/main.o src/main.c
+	acpp -march=rv64g -O3 -DUSE_SYCL -o bin/axpy_sycl-serial.exe src/*.o -lm
 	rm src/*.o
-	${RISCV}/bin/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds  bin/axpy_serial.exe > bin/axpy_serial.dump
+	${RISCV}/bin/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds  bin/axpy_sycl-serial.exe > bin/axpy_sycl-serial.dump
 auto:
 	echo "auto"
 	${RISCV}/bin/clang -march=rv64gcv -O3 -c -o src/utils.o src/utils.c
