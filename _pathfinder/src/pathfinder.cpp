@@ -218,7 +218,7 @@ void run_vector()
         }
     }
     long long end = get_time();
-    printf("TIME TO FIND THE SMALLEST PATH: %f\n", elapsed_time(start, end, false));
+    printf("TIME TO FIND THE SMALLEST PATH: %f\n", elapsed_time(start, end, true));
 
 
     if(compare(cols, dst, reference)){
