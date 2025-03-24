@@ -21,6 +21,10 @@ extern void matrixmul_intrinsics(data_t *a, data_t *b, data_t *c, int n, int m, 
 #else // !USE_RISCV_VECTOR
 extern void matmul_serial(data_t *a, data_t *b, data_t *c, int n, int m, int p);
 #endif
+#ifdef USE_SYCL
+#include <sycl/sycl.hpp>
+extern void matmul_sycl_serial(sycl::queue& q, data_t *a, data_t *b, data_t *c, int n, int m, int p);
+#endif
 
 
 int main (int argc, char **argv)
@@ -47,11 +51,19 @@ int main (int argc, char **argv)
         printf("Matrix Dimensions: M %zu, K %zu, N %zu \n", M, K, N);
     } 
     
+
+#ifdef USE_SYCL
+    sycl::queue q(sycl::cpu_selector_v);
+    data_t *M1          = sycl::malloc_shared<data_t>(M*K, q);
+    data_t *M2          = sycl::malloc_shared<data_t>(M*N, q);
+    data_t *result      = sycl::malloc_shared<data_t>(M*N, q);
+    data_t *reference   = sycl::malloc_shared<data_t>(M*N, q);
+#else
     data_t *M1          = (data_t*)malloc(M*K*sizeof(data_t));
     data_t *M2          = (data_t*)malloc(K*N*sizeof(data_t));
     data_t *result      = (data_t*)malloc(M*N*sizeof(data_t));
     data_t *reference   = (data_t*)malloc(M*N*sizeof(data_t));
-    
+#endif
     // Read Matrix A
     read_vector(file, M1, M*K, K);
 
@@ -81,10 +93,14 @@ int main (int argc, char **argv)
 
 #else // !USE_RISCV_VECTOR
 
+#ifdef USE_SYCL
+    matmul_sycl_serial(q, M1,M2,result, N, M, K);
+    printf("matmul_sycl_serial done\n");
+#else // !USE_SYCL
     matmul_serial(M1,M2,result, N, M, K);
     printf("matmul_serial done\n");
-    
-    end = get_time();
+#endif
+end = get_time();
     printf("matmul_serial time: %f\n", elapsed_time(start, end, true));
 #endif
 

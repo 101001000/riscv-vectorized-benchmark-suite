@@ -11,9 +11,14 @@
 #define DATA_TYPE 
 typedef double data_t;
 
+#ifdef USE_SYCL
+#include <sycl/sycl.hpp>
+#endif
+
 #ifdef USE_RISCV_VECTOR
 #include <riscv_vector.h>
 #include "../../common/vector_defines.h"
+
 
 void matrixmul_intrinsics(data_t *a, data_t *b, data_t *c, int n, int m, int p) {
 
@@ -70,3 +75,19 @@ bool compare( size_t dm, size_t dn, data_t *a ,data_t *b) {
     }
     return result;
 }
+
+#ifdef USE_SYCL
+void matmul_sycl_serial(sycl::queue& q, data_t *a, data_t *b, data_t *c, int n, int m, int p) {
+    q.submit([&](sycl::handler &cgh) {
+        cgh.parallel_for(sycl::range<2>(m, n), 
+        [=](sycl::item<2> item) {
+            int i = item[0];
+            int j = item[1];
+            c[i * n + j] = 0;
+            for (int k = 0; k < p; ++k) {
+                c[i * n + j] += a[i * p + k] * b[k * n + j];
+            }
+        });
+    }).wait();
+}
+#endif 
