@@ -52,6 +52,9 @@ for app in "${SYCLAPPS[@]}"; do
     echo "   - Ejecutando en modo sycl-serial..."
     echo -e "nosim\nsycl-serial\nlarge" | ./run.sh
 
+    echo "   - Ejecutando en modo sycl-auto..."
+    echo -e "nosim\nsycl-auto\nlarge" | ./run.sh
+
     cd "$CURRENT_DIR" || exit
     echo ""
 done
