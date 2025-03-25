@@ -15,7 +15,7 @@ sycl-serial:
 
 sycl-auto:
 	echo "sycl-auto"
-	acpp  -DUSE_SYCL -O3 -fno-vectorize -o bin/matmul_sycl-auto.exe src/matmul.c src/main.c
+	acpp  -DUSE_SYCL -O3 -o bin/matmul_sycl-auto.exe src/matmul.c src/main.c
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/matmul_sycl-auto.exe > bin/matmul_sycl-auto.dump
 
 auto:
