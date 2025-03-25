@@ -17,6 +17,11 @@ APPS=(
   "pathfinder"
 )
 
+SYCLAPPS=(
+  "axpy"
+  "matmul"
+)
+
 echo "-------------------------------------------------------------------"
 echo "RiVec Benchmark Suite - Full Run"
 echo "(Ejecuta cada benchmark en modo 'vector' y 'serial' con 'large')"
@@ -35,6 +40,17 @@ for app in "${APPS[@]}"; do
 
     echo "   - Ejecutando en modo auto..."
     echo -e "nosim\nauto\nlarge" | ./run.sh
+
+    cd "$CURRENT_DIR" || exit
+    echo ""
+done
+
+for app in "${SYCLAPPS[@]}"; do
+    echo ">>> Aplicación: $app"
+    cd "_${app}" || { echo "No se encuentra _$app"; continue; }
+
+    echo "   - Ejecutando en modo sycl-serial..."
+    echo -e "nosim\nsycl-serial\nlarge" | ./run.sh
 
     cd "$CURRENT_DIR" || exit
     echo ""

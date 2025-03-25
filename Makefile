@@ -9,7 +9,8 @@ axpy:
 	make start;			\
 	make vector; 		\
 	make serial;		\
-	make auto;
+	make auto;			\
+	make sycl-serial;	\
 
 blackscholes:
 	cd _blackscholes; 	\
@@ -48,7 +49,8 @@ matmul:
 	make start;			\
 	make vector; 		\
 	make serial;		\
-	make auto;
+	make auto;			\
+	make sycl-serial;	\
 
 
 particlefilter:
