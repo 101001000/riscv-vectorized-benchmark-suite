@@ -19,6 +19,14 @@ sycl-serial:
 	acpp -march=rv64g -O3 -DUSE_SYCL -o bin/axpy_sycl-serial.exe src/*.o -lm
 	rm src/*.o
 	${RISCV}/bin/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds  bin/axpy_sycl-serial.exe > bin/axpy_sycl-serial.dump
+sycl-auto:
+	echo "sycl-auto"
+	acpp -march=rv64gcv -O3 -c -DUSE_SYCL -o src/utils.o src/utils.c
+	acpp -march=rv64gcv -O3 -c -DUSE_SYCL -o src/axpy.o src/axpy.c
+	acpp -march=rv64gcv -O3 -c -DUSE_SYCL -o src/main.o src/main.c
+	acpp -march=rv64gcv -O3 -DUSE_SYCL -o bin/axpy_sycl-auto.exe src/*.o -lm
+	rm src/*.o
+	${RISCV}/bin/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds  bin/axpy_sycl-auto.exe > bin/axpy_sycl-auto.dump
 auto:
 	echo "auto"
 	${RISCV}/bin/clang -march=rv64gcv -O3 -c -o src/utils.o src/utils.c

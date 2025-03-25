@@ -11,6 +11,7 @@ axpy:
 	make serial;		\
 	make auto;			\
 	make sycl-serial;	\
+	make sycl-auto;
 
 blackscholes:
 	cd _blackscholes; 	\
@@ -51,6 +52,7 @@ matmul:
 	make serial;		\
 	make auto;			\
 	make sycl-serial;	\
+	make sycl-auto;
 
 
 particlefilter:
