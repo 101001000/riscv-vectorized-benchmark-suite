@@ -10,7 +10,7 @@ serial:
 	${RISCV}/bin/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds  bin/particlefilter_serial.exe > bin/particlefilter_serial.dump
 
 auto:
-	${RISCV}/bin/clang -march=rv64gcv -O3 -c -o src/particlefilter_auto.o src/particlefilter.c
+	${RISCV}/bin/clang -march=rv64gcv -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize -O3 -c -o src/particlefilter_auto.o src/particlefilter.c
 	${RISCV}/bin/clang -march=rv64gcv -O3 -o bin/particlefilter_auto.exe src/particlefilter_auto.o -lm
 	rm src/*.o
 	${RISCV}/bin/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds  bin/particlefilter_auto.exe > bin/particlefilter_auto.dump

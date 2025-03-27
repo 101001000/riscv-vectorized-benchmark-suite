@@ -9,7 +9,7 @@ serial: # with -O2 fails in spike and gem5 the vector version
 	rm src/*.o
 	${RISCV}/bin/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds  bin/blackscholes_serial.exe > bin/blackscholes_serial.dump
 auto: # with -O2 fails in spike and gem5 the vector version
-	${RISCV}/bin/clang++ -march=rv64gcv -O3 -c -o src/blackscholes_auto.o src/blackscholes.cpp
+	${RISCV}/bin/clang++ -march=rv64gcv -O3 -c -o src/blackscholes_auto.o src/blackscholes.cpp -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize
 	${RISCV}/bin/clang++ -march=rv64gcv -O3 -o bin/blackscholes_auto.exe src/blackscholes_auto.o -lm
 	rm src/*.o
 	${RISCV}/bin/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds  bin/blackscholes_auto.exe > bin/blackscholes_auto.dump

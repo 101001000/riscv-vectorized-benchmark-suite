@@ -14,7 +14,7 @@ serial:
 
 auto:
 	for entry in src/*.cpp ; do \
-		${RISCV}/bin/clang++ -march=rv64gcv -O3 -c -o  $$entry.o  $$entry ; \
+		${RISCV}/bin/clang++ -march=rv64gcv -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize -O3 -c -o  $$entry.o  $$entry ; \
 	done
 	${RISCV}/bin/clang++ -march=rv64gcv -O3 -o bin/swaptions_auto.exe src/*.cpp.o -lm;	\
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/swaptions_auto.exe > bin/swaptions_auto.dump;	\

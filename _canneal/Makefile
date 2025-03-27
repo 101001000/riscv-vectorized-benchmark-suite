@@ -13,7 +13,7 @@ serial:
 
 auto:
 	for entry in src/*.cpp ; do \
-		${RISCV}/bin/clang++ -march=rv64gcv -O2 -c -o $$entry.o  $$entry ; \
+		${RISCV}/bin/clang++ -march=rv64gcv -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize -O2 -c -o $$entry.o  $$entry ; \
 	done
 	${RISCV}/bin/clang++ -march=rv64g -O2 -o bin/canneal_auto.exe src/*.cpp.o -lm ; \
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/canneal_auto.exe > bin/canneal_auto.dump ; \

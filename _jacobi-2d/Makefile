@@ -9,7 +9,7 @@ serial:
 	rm src/*.o
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/jacobi-2d_serial.exe > bin/jacobi-2d_serial.dump
 auto:
-	${RISCV}/bin/clang++ -march=rv64gcv -O3 -c -o src/jacobi-2d.o src/jacobi-2d.cpp
+	${RISCV}/bin/clang++ -march=rv64gcv -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize -c -o src/jacobi-2d.o src/jacobi-2d.cpp
 	${RISCV}/bin/clang++ -march=rv64gcv -O3 -o bin/jacobi-2d_auto.exe src/*.o -lm
 	rm src/*.o
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/jacobi-2d_auto.exe > bin/jacobi-2d_auto.dump

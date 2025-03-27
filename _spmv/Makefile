@@ -24,7 +24,7 @@ serial:
 
 auto:
 	@echo "Compiling auto version..."
-	$(RISCV_BIN)/clang -march=rv64gcv -O3 -o $(BIN_AUTO) $(SRC)
+	$(RISCV_BIN)/clang -march=rv64gcv -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize -O3 -o $(BIN_AUTO) $(SRC)
 	$(RISCV_BIN)/llvm-objdump --mattr=+m,+f,+d,+a,+c -ds $(BIN_AUTO) > $(DUMP_AUTO)
 
 vector:

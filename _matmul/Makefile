@@ -15,12 +15,12 @@ sycl-serial:
 
 sycl-auto:
 	echo "sycl-auto"
-	acpp  -DUSE_SYCL -O3 -o bin/matmul_sycl-auto.exe src/matmul.c src/main.c
+	acpp  -DUSE_SYCL -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize -o bin/matmul_sycl-auto.exe src/matmul.c src/main.c
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/matmul_sycl-auto.exe > bin/matmul_sycl-auto.dump
 
 auto:
 	echo "auto"
-	${RISCV}/bin/clang -march=rv64gcv -O3 -o bin/matmul_auto.exe src/matmul.c src/main.c
+	${RISCV}/bin/clang -march=rv64gcv -O3 -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize -o bin/matmul_auto.exe src/matmul.c src/main.c
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/matmul_auto.exe > bin/matmul_auto.dump
 
 vector:
