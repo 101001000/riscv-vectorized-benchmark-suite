@@ -3,6 +3,13 @@
 start:
 	rm -f bin/*.*
 
+
+sycl-serial:
+	acpp -march=rv64g -O3 -DUSE_SYCL -o bin/pathfinder_sycl-serial.exe src/pathfinder.cpp
+	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/pathfinder_sycl-serial.exe > bin/pathfinder_sycl-serial.dump
+sycl-auto:
+	acpp -march=rv64gv -O3 -DUSE_SYCL -o bin/pathfinder_sycl-serial.exe src/pathfinder.cpp -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -Rpass-analysis=loop-vectorize
+	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/pathfinder_sycl-serial.exe > bin/pathfinder_sycl-serial.dump
 serial:
 	${RISCV}/bin/clang++ -march=rv64g -O3 -o bin/pathfinder_serial.exe src/pathfinder.cpp
 	${RISCV}/bin/llvm-objdump  --mattr=+m,+f,+d,+a,+c -ds  bin/pathfinder_serial.exe > bin/pathfinder_serial.dump

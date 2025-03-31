@@ -24,6 +24,10 @@ using namespace std;
 #include "vector_defines.h"
 #endif
 
+#ifdef USE_SYCL
+#include <sycl/sycl.hpp>
+#endif
+
 /************************************************************************/
 
 //Enable RESULT_PRINT in order to see the result vector, for instruction count it should be disable
@@ -52,6 +56,9 @@ void read_vector(FILE *file, int *vector, size_t size, size_t rowSize);
 
 bool compare( int cols, int* result, int* reference);
 
+
+sycl::queue q = sycl::queue(sycl::cpu_selector_v);
+
 void init(int argc, char** argv)
 {
     if(argc!=2){
@@ -74,10 +81,16 @@ void init(int argc, char** argv)
     } 
 
     char line[16];
+#ifdef USE_SYCL
+    //q = new sycl::queue(sycl::cpu_selector_v);
+    wall = sycl::malloc_shared<int>(rows * cols, q);
+    result = sycl::malloc_shared<int>(cols, q);
+    reference = sycl::malloc_shared<int>(cols, q);
+#else
     wall = new int[rows * cols];
     result = new int[cols];
     reference = new int[cols];
-
+#endif
     // Read Matrix
     read_vector(file, wall, rows * cols, cols);
 
@@ -126,14 +139,24 @@ printf("TIME TO INIT DATA: %f\n", elapsed_time(start_0, end_0, false));
 
 void run()
 {
+
+#ifdef USE_SYCL
+    int *min = sycl::malloc_shared<int>(1, q);
+#else
     int min;
+#endif
     int *src,*dst, *temp;
-    
+
     printf("NUMBER OF RUNS: %d\n",NUM_RUNS);
     long long start = get_time();
 
     for (int j=0; j<NUM_RUNS; j++) {
-        src = new int[cols];
+        #ifdef USE_SYCL
+            src = sycl::malloc_shared<int>(cols, q);
+        #else
+            src = new int[cols];
+        #endif
+
         for (int x = 0; x < cols; x++){
             result[x] = wall[x];
         }
@@ -143,14 +166,28 @@ void run()
             temp = src;
             src = dst;
             dst = temp;
-            for(int n = 0; n < cols; n++){
-              min = src[n];
-              if (n > 0)
-                min = MIN(min, src[n-1]);
-              if (n < cols-1)
-                min = MIN(min, src[n+1]);
-              dst[n] = wall[(t+1)*cols + n]+min;
-            }
+            #ifdef USE_SYCL
+                q.submit([&](sycl::handler& cgh){
+                    sycl::stream out(1024, 256, cgh);
+                    cgh.parallel_for(sycl::range<1>(cols), [=](sycl::id<1> n){
+                        *min = src[n];
+                        if (n > 0)
+                            *min = MIN(*min, src[n-1]);
+                        if (n < cols-1)
+                           *min = MIN(*min, src[n+1]);
+                        dst[n] = wall[(t+1)*cols + n]+*min;
+                    });
+                }).wait();
+            #else
+                for(int n = 0; n < cols; n++){
+                    min = src[n];
+                    if (n > 0)
+                        min = MIN(min, src[n-1]);
+                    if (n < cols-1)
+                        min = MIN(min, src[n+1]);
+                    dst[n] = wall[(t+1)*cols + n]+min;
+                }
+            #endif
         }   
     }
 

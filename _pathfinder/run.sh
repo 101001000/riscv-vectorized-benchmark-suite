@@ -33,7 +33,7 @@ done
 while true; do
     echo -n "do you want to run the serial or vectorized version [serial vector]: "
     read version
-    if [[ $version == "serial" ]]  || [[ $version == "vector" ]] || [[ $version == "auto" ]]; then
+    if [[ $version == "serial" ]]  || [[ $version == "vector" ]] || [[ $version == "auto" ]] || [[ $version == "sycl-serial" ]] || [[ $version == "sycl-auto" ]]; then
         break
     else
     	echo "Input not valid, try again."
