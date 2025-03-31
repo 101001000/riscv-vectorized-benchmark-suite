@@ -56,8 +56,9 @@ void read_vector(FILE *file, int *vector, size_t size, size_t rowSize);
 
 bool compare( int cols, int* result, int* reference);
 
-
+#ifdef USE_SYCL
 sycl::queue q = sycl::queue(sycl::cpu_selector_v);
+#endif
 
 void init(int argc, char** argv)
 {
