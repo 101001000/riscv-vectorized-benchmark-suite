@@ -147,6 +147,7 @@ void run()
     int min;
 #endif
     int *src,*dst, *temp;
+    //src = sycl::malloc_shared<int>(cols, q);
 
     printf("NUMBER OF RUNS: %d\n",NUM_RUNS);
     long long start = get_time();
@@ -169,16 +170,16 @@ void run()
             dst = temp;
             #ifdef USE_SYCL
                 q.submit([&](sycl::handler& cgh){
-                    sycl::stream out(1024, 256, cgh);
+                    //sycl::stream out(1024, 256, cgh);
                     cgh.parallel_for(sycl::range<1>(cols), [=](sycl::id<1> n){
-                        *min = src[n];
+                        int min = src[n];
                         if (n > 0)
-                            *min = MIN(*min, src[n-1]);
+                            min = MIN(min, src[n-1]);
                         if (n < cols-1)
-                           *min = MIN(*min, src[n+1]);
-                        dst[n] = wall[(t+1)*cols + n]+*min;
+                           min = MIN(min, src[n+1]);
+                        dst[n] = wall[(t+1)*cols + n]+min;
                     });
-                }).wait();
+                });
             #else
                 for(int n = 0; n < cols; n++){
                     min = src[n];
@@ -189,7 +190,10 @@ void run()
                     dst[n] = wall[(t+1)*cols + n]+min;
                 }
             #endif
-        }   
+        }
+#ifdef USE_SYCL
+	q.wait();   
+#endif
     }
 
     long long end = get_time();
