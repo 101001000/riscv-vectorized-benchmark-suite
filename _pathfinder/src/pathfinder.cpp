@@ -142,23 +142,40 @@ void run()
 {
 
 #ifdef USE_SYCL
-    int *min = sycl::malloc_shared<int>(1, q);
+    int** src = sycl::malloc_shared<int*>(1, q);
+    int** dst = sycl::malloc_shared<int*>(1, q);
+    int** temp = sycl::malloc_shared<int*>(1, q);
 #else
-    int min;
-#endif
     int *src,*dst, *temp;
-    //src = sycl::malloc_shared<int>(cols, q);
+#endif
 
     printf("NUMBER OF RUNS: %d\n",NUM_RUNS);
     long long start = get_time();
 
     for (int j=0; j<NUM_RUNS; j++) {
-        #ifdef USE_SYCL
-            src = sycl::malloc_shared<int>(cols, q);
-        #else
-            src = new int[cols];
-        #endif
-
+#ifdef USE_SYCL
+        (*src) = sycl::malloc_shared<int>(cols, q);
+        for (int x = 0; x < cols; x++){
+            result[x] = wall[x];
+        }
+        *dst = result;
+        q.submit([&](sycl::handler &cgh) {
+            cgh.parallel_for(sycl::range<1>(rows-1), [=](sycl::id<1> t){
+                *temp = *src;
+                *src = *dst;
+                *dst = *temp;
+                for(int n = 0; n < cols; n++){
+                    int min = (*src)[n];
+                    if (n > 0)
+                        min = MIN(min, (*src)[n-1]);
+                    if (n < cols-1)
+                        min = MIN(min, (*src)[n+1]);
+                    (*dst)[n] = wall[(t+1)*cols + n]+min;
+                }
+            });
+        }).wait(); 
+#else
+        src = new int[cols];
         for (int x = 0; x < cols; x++){
             result[x] = wall[x];
         }
@@ -168,38 +185,26 @@ void run()
             temp = src;
             src = dst;
             dst = temp;
-            #ifdef USE_SYCL
-                q.submit([&](sycl::handler& cgh){
-                    //sycl::stream out(1024, 256, cgh);
-                    cgh.parallel_for(sycl::range<1>(cols), [=](sycl::id<1> n){
-                        int min = src[n];
-                        if (n > 0)
-                            min = MIN(min, src[n-1]);
-                        if (n < cols-1)
-                           min = MIN(min, src[n+1]);
-                        dst[n] = wall[(t+1)*cols + n]+min;
-                    });
-                });
-            #else
-                for(int n = 0; n < cols; n++){
-                    min = src[n];
-                    if (n > 0)
-                        min = MIN(min, src[n-1]);
-                    if (n < cols-1)
-                        min = MIN(min, src[n+1]);
-                    dst[n] = wall[(t+1)*cols + n]+min;
-                }
-            #endif
-        }
-#ifdef USE_SYCL
-	q.wait();   
+            for(int n = 0; n < cols; n++){
+                int min = src[n];
+                if (n > 0)
+                    min = MIN(min, src[n-1]);
+                if (n < cols-1)
+                    min = MIN(min, src[n+1]);
+                dst[n] = wall[(t+1)*cols + n]+min;
+            }
+        } 
 #endif
     }
 
     long long end = get_time();
     printf("TIME TO FIND THE SMALLEST PATH: %f\n", elapsed_time(start, end, true));
 
+#ifdef USE_SYCL
+    if(compare(cols, *dst, reference)){
+#else
     if(compare(cols, dst, reference)){
+#endif
         printf("Verification failed!\n");
     } else {
         printf("Verification passed!\n");
@@ -212,7 +217,7 @@ void run()
     
     free(dst);
     free(wall);
-    free(src);
+    //free(src);
 }
 
 #else // USE_RISCV_VECTOR
