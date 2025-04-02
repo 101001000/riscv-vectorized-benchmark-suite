@@ -70,7 +70,7 @@ pathfinder:
 	make serial;		\
 	make auto;
 	make sycl-serial; \
-	make sycl-auto \
+	make sycl-auto 
 spmv:
 	cd _spmv; 			\
 	make start;			\
